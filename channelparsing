@@ -1,0 +1,49 @@
+from selenium import webdriver
+import time
+from datetime import datetime
+
+channel_name= "kam3tv"
+url="https://www.youtube.com/user/%s/videos" %channel_name
+
+
+driver=webdriver.Chrome()
+driver.get(url)
+
+for i in range(1,5): #scrolls to bottom of video page to load every video
+    time.sleep(2)
+    driver.execute_script("window.scrollTo(0, 5000)")
+    time.sleep(2)
+
+driver.execute_script("window.scrollTo(0, 0)") #scrolls back to top to get link in view
+
+videos=driver.find_elements_by_id("video-title")
+number_of_videos=len(videos)
+print (number_of_videos) #check if all videos were found
+
+results=open("output.csv",'w')
+dates=[]
+
+for video in videos: #go through each video and get published date
+    print(video.text)
+    video.click()
+    time.sleep(2)
+    date = driver.find_element_by_xpath("//*[@id=\"upload-info\"]/span").text
+    print(date)
+    dates.append(date[13:])
+    results.write(date[13:]+"\n")
+    driver.execute_script("window.history.go(-1)")
+    time.sleep(0.5)
+
+results.close()
+driver.close() #close browser
+print(dates)
+dates=list(filter(None,dates))
+objdates= [datetime.strptime(date, "%b %d, %Y") for date in dates]
+shortdates=[datetime.strftime(objdate, "%m/%Y") for objdate in objdates]
+print(shortdates)
+
+results2=open("output2.csv",'w')
+
+for shortdate in shortdates:
+    results2.write(shortdate+"\n")
+
