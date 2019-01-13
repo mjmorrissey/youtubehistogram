@@ -1,0 +1,53 @@
+import csv
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib.dates import date2num
+
+dates=[]
+
+with open('output2.csv') as csv_file:
+    csv_reader=csv.reader(csv_file,delimiter=',')
+    for row in csv_reader:
+        dates.append(row)
+    print (dates)
+
+datetimes=[]
+for d in dates:
+    datetime=datetime.strptime(str(d), "['%m/%Y']")
+    datetimes.append(datetime)
+print(datetimes)
+
+end=datetimes[0]
+print(end)
+start=datetimes[-1]
+print(start)
+one_month=relativedelta(months=1)
+one_day=timedelta(days=1)
+print(end-start)
+duration = (relativedelta(end,start).years*12) + relativedelta(end,start).months
+print("duration")
+print(duration)
+months = []
+labels= []
+for i in range(0,duration+2):
+    eachmonth=start+(i)*one_month
+    months.append(eachmonth)
+    labels.append(eachmonth.strftime('%b \n %y'))
+print("datetimers")
+print(date2num(datetimes))
+print("labels")
+print(labels)
+print("months")
+print(months)
+nummonth=date2num(months)
+print("nummonth")
+print(nummonth)
+fix, ax = plt.subplots()
+plt.hist(date2num(datetimes), bins=nummonth,label=labels,align='left')
+ax.set_xticks(nummonth)
+ax.set_xticklabels(labels)
+plt.title("Number of Videos Per Month")
+matplotlib.rcParams.update({'font.size': 10})
+plt.show()
